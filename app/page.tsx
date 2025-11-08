@@ -1,4 +1,5 @@
 import QuestionClient from "@/components/QuestionClient"; // client component
+import AIDialogue from "@/components/AIDialogue";
 import { neon } from "@neondatabase/serverless";
 
 export default async function Home() {
@@ -10,8 +11,14 @@ export default async function Home() {
     const initial = JSON.parse(JSON.stringify(questions));
 
     return (
-        <>
-            <QuestionClient initialQuestions={initial} />
-        </>
+        <div className="flex gap-6 p-6">
+            <div className="flex-1">
+                <QuestionClient initialQuestions={initial} />
+            </div>
+
+        <div className="w-[400px]">
+            <AIDialogue />
+        </div>
+        </div>
     );
 }

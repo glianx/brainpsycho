@@ -15,26 +15,36 @@ import { useState } from "react";
 
 export default function QuestionClient({ initialQuestions }: { initialQuestions: any[] }) {
     const [qs, setQs] = useState(initialQuestions);
+    const [feedback, setFeedback] = useState("")
 
     async function askChat(i: number) {
         // same as curl -X POST http://localhost:3000/api/askChat \
         // -H "origin: http://localhost:3000" \
         // -H "x-internal-key: secret123" \
         // -d "what is 1+1?"
+
         const res = await fetch("/api/askChat", {
             method: "POST",
             headers: { "x-internal-key": "secret123" },
             body: qs[i].q_text,
         });
+
         const msg = await res.text();
         const newQs = [...qs];
         newQs[i] = { ...qs[i], msg };
         setQs(newQs);
     }
 
+    function handleSubmission(q: any, selectedAnswer: string) {
+        if (q.answer === selectedAnswer) setFeedback("correct")
+        else setFeedback("wrong")
+    }
+
     return (
         <>
-            {qs.map((q, i) => (
+            {qs
+                .sort((a,b) => a.id - b.id)
+                .map((q, i) => (
                 <Card key={q.id} className="m-4">
                     <CardHeader>
                         <CardTitle>Question {q.q_num}</CardTitle>
@@ -49,9 +59,9 @@ export default function QuestionClient({ initialQuestions }: { initialQuestions:
                         <div className="py-2">{q.q_text}</div>
                         <p>{q.answer}</p>
                         <p>{q.solution}</p>
-                        <ButtonGroup>
+                        <ButtonGroup className="py-2">
                             {(["a", "b", "c", "d", "e"] as const).map((l) => (
-                                <Button key={l} variant="outline">
+                                <Button key={l} variant="outline" onClick={() => handleSubmission(q, l)}>
                                     {q[l]}
                                 </Button>
                             ))}
@@ -64,6 +74,7 @@ export default function QuestionClient({ initialQuestions }: { initialQuestions:
                                 <Button onClick={() => askChat(i)}>Check Answer</Button>
                             </ButtonGroup>
                         </ButtonGroup>
+                        <h3 id="feedback">{feedback}</h3>
                     </CardContent>
                     <CardFooter>{q.msg}</CardFooter>
                 </Card>

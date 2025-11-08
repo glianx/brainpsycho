@@ -15,7 +15,7 @@ for (const q of qs) {
 }
 
 await Promise.all(
-    qs.filter(q => q.id >= 17).map(async q => {
+    qs.filter(q => q.id >= 1).map(async q => {
         console.log(q.id)
         const res = await client.responses.create({
             model: "gpt-5",
@@ -24,8 +24,8 @@ await Promise.all(
                 <<< input >>> 
                 ${q.q_text}. 
                 <<< /input >>>
-                the correct response is ${q[q.answer]}.
-                output with \\( and \\) delimiters for LaTeX.
+                the correct answer is ${q[q.answer]}.
+                output with \\( and \\) delimiters for LaTeX and box the answer.
 
                 below are sample input/output format and style.
                 
@@ -36,7 +36,7 @@ await Promise.all(
                 <<< output >>>
                 The total number of cards is \\(4\\times 15=60\\). With \\(2\\) more friends, there are \\(4+2=6\\) players in total. 
                 
-                Thus, each player receives \\(60\\div 6=10\\) cards.
+                Thus, each player receives \\(60\\div 6=\\boxed{10}\\) cards.
                 <<< /output >>>
 
                 <<< input >>>
@@ -46,7 +46,7 @@ await Promise.all(
                 <<< output >>>
                 This is an arithmetic sequence with difference \\(-7\\), so the \\(n^{th}\\) term is \\(a_n=100-7(n-1)\\). 
                 
-                For \\(n=10\\), \\(a_10=100-7\\cdot9=100-63=37\\).
+                For \\(n=10\\), \\(a_10=100-7\\cdot9=100-63=\\boxed{37}\\).
                 <<< /output >>>
                  `,
         });

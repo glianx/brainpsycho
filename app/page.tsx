@@ -15,7 +15,7 @@ export default async function Home() {
             </div>
 
         <div className="w-[400px]">
-            <AIDialogue />
+            <AIDialogue questions={initial}/>
         </div>
         </div>
     );

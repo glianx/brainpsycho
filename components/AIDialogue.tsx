@@ -1,5 +1,5 @@
 'use client';
-
+import { neon } from "@neondatabase/serverless";
 import { useState, useRef } from 'react';
 import {
   PromptInput,
@@ -18,7 +18,11 @@ import {
 import { Message, MessageContent } from '@/components/ai-elements/message';
 import { Loader } from '@/components/ai-elements/loader';
 
-export default function AIDialogue() {
+interface AIDialogueProps {
+  questions: { id: number; q_text: string; a: string }[];
+}
+
+export default function AIDialogue({ questions }: AIDialogueProps) {
   const [text, setText] = useState('');
   const [messages, setMessages] = useState<
     { id: string; role: 'user' | 'assistant'; text: string }[]
@@ -36,11 +40,27 @@ export default function AIDialogue() {
     setStatus('sending');
 
     try {
-      // Send message to your backend
+      // const promptQuestions = questions
+      //   .map(q => `Q: ${q.q_text}\nA: ${q.a}`)
+      //   .join("\n\n");
+
+      const formattedQuestions = Array.isArray(questions)
+        ? questions
+          .map((q, i) => `Question ${q.id}: ${q.q_text}\nAnswer: ${q.a}`)
+          .join("\n\n")
+        : "No questions available.";
+
+      const systemPrompt = `You are an encouraging, friendly math tutor. Use these math questions and answers to give a pedagogical, detailed explanation of how to solve this question to your student. Here are the questions and answers: ${formattedQuestions}`;
+
+      // Send message to backend
       const res = await fetch('/api/askChatProxy', {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: message.text,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+                q_text: message.text,
+                systemPrompt: systemPrompt
+            })
+        //body: message.text,
     });
 
 

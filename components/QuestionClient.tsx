@@ -47,6 +47,8 @@ export default function QuestionClient({ initialQuestions }: { initialQuestions:
                     </CardHeader>
                     <CardContent>
                         <div className="py-2">{q.q_text}</div>
+                        <p>{q.answer}</p>
+                        <p>{q.solution}</p>
                         <ButtonGroup>
                             {(["a", "b", "c", "d", "e"] as const).map((l) => (
                                 <Button key={l} variant="outline">

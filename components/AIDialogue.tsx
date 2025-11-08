@@ -31,6 +31,9 @@ export default function AIDialogue({ questions }: AIDialogueProps) {
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const maxHistory = 10;
+
+
   const sendMessage = async (message: { text: string }) => {
     if (!message.text) return;
 
@@ -40,25 +43,26 @@ export default function AIDialogue({ questions }: AIDialogueProps) {
     setStatus('sending');
 
     try {
-      // const promptQuestions = questions
-      //   .map(q => `Q: ${q.q_text}\nA: ${q.a}`)
-      //   .join("\n\n");
-
       const formattedQuestions = Array.isArray(questions)
         ? questions
           .map((q, i) => `Question ${q.id}: ${q.q_text}\nAnswer: ${q.a}`)
           .join("\n\n")
         : "No questions available.";
 
-      const systemPrompt = `You are an encouraging, friendly math tutor. Use these math questions and answers to give a pedagogical, detailed explanation of how to solve this question to your student. Here are the questions and answers: ${formattedQuestions}`;
+        const historyText = messages
+          .slice(-maxHistory) // last N messages
+          .map(m => `${m.role === 'user' ? 'Student' : 'Tutor'}: ${m.text}`)
+          .join('\n');
 
-      // Send message to backend
+      const systemPrompt = `You are an encouraging, friendly math tutor. Use these math questions and answers to give a pedagogical, detailed explanation of how to solve this question to your student. Here are the questions and answers: ${formattedQuestions}. Here is the conversation history so far: ${historyText}. When responding, give a detailed, step-by-step explanation suitable for a student.`;
+
+      // Send info to backend
       const res = await fetch('/api/askChatProxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
                 q_text: message.text,
-                systemPrompt: systemPrompt
+                systemPrompt
             })
         //body: message.text,
     });

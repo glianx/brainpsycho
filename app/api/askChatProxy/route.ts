@@ -1,17 +1,19 @@
 //needed to fetch to chat from front end
 export async function POST(req: Request) {
-  const text = await req.text();
-  console.log("[chatProxy] received text:", text);
+  const { q_text, systemPrompt } = await req.json();
 
   try {
     const res = await fetch(`${process.env.API_BASE_URL ?? "http://localhost:3000"}/api/askChat`, {
       method: "POST",
       headers: {
-        "Content-Type": "text/plain",
+        "Content-Type": "application/json",
         "x-internal-key": process.env.INTERNAL_KEY!,
         "Origin": "http://localhost:3000",
       },
-      body: text,
+      body: JSON.stringify({
+        q_text,
+        systemPrompt
+      }),
     });
 
     console.log("[chatProxy] askChat status:", res.status);

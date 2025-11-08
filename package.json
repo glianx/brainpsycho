@@ -18,6 +18,7 @@
         "clsx": "^2.1.1",
         "dotenv": "^17.2.3",
         "lucide-react": "^0.548.0",
+        "neondatabase": "^0.0.1-security",
         "next": "16.0.0",
         "openai": "^6.7.0",
         "prettier": "^3.6.2",

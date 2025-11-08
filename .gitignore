@@ -42,3 +42,8 @@ next-env.d.ts
 node_modules
 venv
 **/.env*
+
+.vscode/
+.DS_Store
+.idea/
+*.iml

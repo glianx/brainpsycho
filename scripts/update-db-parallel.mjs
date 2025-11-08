@@ -1,26 +1,27 @@
 import { neon } from "@neondatabase/serverless";
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
 import OpenAI from "openai";
 
-dotenv.config({ path: '../.env'})
+dotenv.config({ path: "../.env" });
 
-const sql = neon(process.env.DATABASE_URL)
+const sql = neon(process.env.DATABASE_URL);
 const client = new OpenAI();
 
-const qs = await sql`select * from questions`
-console.log(qs)
+const qs = await sql`select * from questions`;
+console.log(qs);
 
 for (const q of qs) {
-    console.log(q[q.answer])
+    console.log(q[q.answer]);
 }
 
 await Promise.all(
-    qs.filter(q => q.id >= 1).map(async q => {
-        console.log(q.id)
-        const res = await client.responses.create({
-            model: "gpt-5",
-            input: 
-                `how to solve this question: 
+    qs
+        .filter((q) => q.id >= 1)
+        .map(async (q) => {
+            console.log(q.id);
+            const res = await client.responses.create({
+                model: "gpt-5",
+                input: `how to solve this question: 
                 <<< input >>> 
                 ${q.q_text}. 
                 <<< /input >>>
@@ -49,10 +50,10 @@ await Promise.all(
                 For \\(n=10\\), \\(a_10=100-7\\cdot9=100-63=\\boxed{37}\\).
                 <<< /output >>>
                  `,
-        });
-        const msg = res.output_text
-        console.log(msg)
-    
-        await sql`update questions set solution = ${msg} where id = ${q.id}`
-    })
-)
+            });
+            const msg = res.output_text;
+            console.log(msg);
+
+            await sql`update questions set solution = ${msg} where id = ${q.id}`;
+        })
+);

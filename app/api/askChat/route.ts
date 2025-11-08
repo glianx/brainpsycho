@@ -19,9 +19,14 @@ export async function POST(req: Request) {
     const res = await client.responses.create({
         model: "gpt-5-nano",
         input: [
-            { role: "system", content: systemPrompt ?? "give a pedagogical, detailed explanation of how to solve this question"},
-            { role: "user", content: q_text }
-        ]
+            {
+                role: "system",
+                content:
+                    systemPrompt ??
+                    "give a pedagogical, detailed explanation of how to solve this question",
+            },
+            { role: "user", content: q_text },
+        ],
     });
 
     return new Response(res.output_text);

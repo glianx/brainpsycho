@@ -16,6 +16,9 @@ import { useState } from "react";
 export default function QuestionClient({ initialQuestions }: { initialQuestions: any[] }) {
     const [qs, setQs] = useState(initialQuestions);
     const [feedback, setFeedback] = useState("")
+    // const [buttonvar, setButtonvar] = useState("outline")
+    const [selected, setSelected] = useState("")
+    const [selectedQuestion, setSelectedQuestion] = useState(-1)
 
     async function askChat(i: number) {
         // same as curl -X POST http://localhost:3000/api/askChat \
@@ -42,8 +45,20 @@ export default function QuestionClient({ initialQuestions }: { initialQuestions:
     }
 
     function handleSubmission(q: any, selectedAnswer: string) {
-        if (q.answer === selectedAnswer) setFeedback("correct")
-        else setFeedback("wrong")
+        setSelected(selectedAnswer)
+        setSelectedQuestion(q.id)
+        if (q.answer === selectedAnswer) {
+            setFeedback("Correct! 🎉");
+        }
+        else setFeedback("Try again.")
+    }
+
+    function getVariant(q: any, l: string) {
+        if (selected === l && selectedQuestion === q.id) {
+            if (l === q.answer) return "correct"
+            return "incorrect"
+        }
+        return "outline"
     }
 
     return (
@@ -67,7 +82,7 @@ export default function QuestionClient({ initialQuestions }: { initialQuestions:
                         <p>{q.solution}</p>
                         <ButtonGroup className="py-2">
                             {(["a", "b", "c", "d", "e"] as const).map((l) => (
-                                <Button key={l} variant="outline" onClick={() => handleSubmission(q, l)}>
+                                <Button key={l} variant={getVariant(q, l)} onClick={() => handleSubmission(q, l)}>
                                     {q[l]}
                                 </Button>
                             ))}
@@ -80,7 +95,7 @@ export default function QuestionClient({ initialQuestions }: { initialQuestions:
                                 <Button onClick={() => askChat(i)}>Check Answer</Button>
                             </ButtonGroup>
                         </ButtonGroup>
-                        <h3 id="feedback">{feedback}</h3>
+                        <p id="feedback" hidden={q.id !== selectedQuestion} className="py-2 text-lg">{feedback}</p>
                     </CardContent>
                     <CardFooter>{q.msg}</CardFooter>
                 </Card>

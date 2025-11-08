@@ -10,10 +10,18 @@ export async function POST(req: Request) {
     const key = req.headers.get("x-internal-key");
     if (key !== process.env.INTERNAL_KEY) return new Response("Unauthorized", { status: 401 });
 
-    const q_text = await req.text();
+    const body = await req.json();
+    const { q_text, systemPrompt } = body;
+
+    console.log("🧩 systemPrompt:", systemPrompt?.slice(0, 500)); // log first 500 chars
+    console.log("🧩 q_text:", q_text);
+
     const res = await client.responses.create({
         model: "gpt-5-nano",
-        input: `give a pedagogical, detailed explanation of how to solve this question: ${q_text}`,
+        input: [
+            { role: "system", content: systemPrompt ?? "give a pedagogical, detailed explanation of how to solve this question"},
+            { role: "user", content: q_text }
+        ]
     });
 
     return new Response(res.output_text);

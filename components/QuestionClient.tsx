@@ -23,8 +23,14 @@ export default function QuestionClient({ initialQuestions }: { initialQuestions:
         // -d "what is 1+1?"
         const res = await fetch("/api/askChat", {
             method: "POST",
-            headers: { "x-internal-key": "secret123" },
-            body: qs[i].q_text,
+            headers: { 
+                "Content-Type": "application/json",
+                "x-internal-key": "secret123" },
+            body: JSON.stringify({
+                q_text: qs[i].q_text,
+                systemPrompt: "You are an encouraging, friendly math tutor. Give a pedagogical, detailed explanation of how to solve this question."
+            })
+            //body: qs[i].q_text,
         });
         const msg = await res.text();
         const newQs = [...qs];

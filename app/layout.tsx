@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { StackProvider, StackTheme } from "@stackframe/stack";
+import { stackClientApp } from "../stack/client";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
-import Script from "next/script"
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -23,21 +25,18 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    
     return (
         <html lang="en">
             <head>
-        
-
                 <Script
                     id="mathjax"
                     // strategy="beforeInteractive"
                     src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"
                 />
             </head>
-            <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+            <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}><StackProvider app={stackClientApp}><StackTheme>
                 {children}
-            </body>
+            </StackTheme></StackProvider></body>
         </html>
     );
 }

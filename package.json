@@ -23,6 +23,7 @@
         "@radix-ui/react-slot": "^1.2.4",
         "@radix-ui/react-tooltip": "^1.2.8",
         "@radix-ui/react-use-controllable-state": "^1.2.2",
+        "@stackframe/stack": "^2.8.49",
         "@xyflow/react": "^12.9.2",
         "ai": "^5.0.89",
         "better-react-mathjax": "^2.3.0",

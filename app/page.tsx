@@ -1,10 +1,10 @@
-import QuestionClient from "@/components/QuestionClient"; // client component
 import AIDialogue from "@/components/AIDialogue";
+import QuestionClient from "@/components/QuestionClient"; // client component
 import { neon } from "@neondatabase/serverless";
 
 export default async function Home() {
     const sql = neon(process.env.DATABASE_URL!);
-    const questions = await sql`select * from questions`; 
+    const questions = await sql`select * from questions`;
 
     const initial = JSON.parse(JSON.stringify(questions));
 
@@ -14,9 +14,9 @@ export default async function Home() {
                 <QuestionClient initialQuestions={initial} />
             </div>
 
-        <div className="w-[400px]">
-            <AIDialogue questions={initial}/>
-        </div>
+            <div className="w-[400px]">
+                <AIDialogue questions={initial} />
+            </div>
         </div>
     );
 }

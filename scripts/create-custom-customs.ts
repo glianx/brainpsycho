@@ -43,7 +43,6 @@ async function createCustomQuestions() {
 
         for (const interest of INTERESTS) {
             try {
-                // Check if customization already exists - with retry
                 const existing = await retryWithBackoff(async () => {
                     const checkSql = neon(process.env.DATABASE_URL!);
                     return await checkSql`
@@ -57,7 +56,6 @@ async function createCustomQuestions() {
                     continue;
                 }
 
-                // Generate customization using AI
                 console.log(`  🎯 Customizing for ${interest}...`);
                 const customized = await customizeQuestion(
                     question.q_text,
@@ -71,12 +69,12 @@ async function createCustomQuestions() {
                     continue;
                 }
 
-                // Insert into database with retry
                 await retryWithBackoff(async () => {
                     await insertCustomQuestion({
                         question_id: question.id,
                         interest: interest,
                         custom_question_text: customized.questionText,
+                        custom_solution: customized.solutionText,
                     });
                 });
 

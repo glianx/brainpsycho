@@ -30,6 +30,6 @@
         ".next/dev/types/**/*.ts",
         "**/*.mts",
         "scripts/update-db.mjs"
-    ],
+, "components/QuestionClient.tsx.bak"    ],
     "exclude": ["node_modules"]
 }

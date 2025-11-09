@@ -9,14 +9,7 @@ import {
     PromptInputTools,
     PromptInputButton,
 } from "@/components/ai-elements/prompt-input";
-    PromptInput,
-    PromptInputTextarea,
-    PromptInputSubmit,
-    PromptInputFooter,
-    PromptInputBody,
-    PromptInputTools,
-    PromptInputButton,
-} from "@/components/ai-elements/prompt-input";
+
 import {
   Conversation,
   ConversationContent,
@@ -30,7 +23,6 @@ import { MathJax, MathJaxContext } from "better-react-mathjax";
 
 interface AIDialogueProps {
     questions: { id: number; q_text: string; a: string }[];
-    questions: { id: number; q_text: string; a: string }[];
 }
 
 export default function AIDialogue({ questions }: AIDialogueProps) {
@@ -39,27 +31,13 @@ export default function AIDialogue({ questions }: AIDialogueProps) {
         { id: string; role: "user" | "assistant"; text: string }[]
     >([]);
     const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
-    const [text, setText] = useState("");
-    const [messages, setMessages] = useState<
-        { id: string; role: "user" | "assistant"; text: string }[]
-    >([]);
-    const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
-
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const maxHistory = 10;
     const maxHistory = 10;
 
     const sendMessage = async (message: { text: string }) => {
         if (!message.text) return;
-    const sendMessage = async (message: { text: string }) => {
-        if (!message.text) return;
 
-        // Add user message to UI
-        const userId = crypto.randomUUID();
-        setMessages((prev) => [...prev, { id: userId, role: "user", text: message.text }]);
-        setStatus("sending");
         // Add user message to UI
         const userId = crypto.randomUUID();
         setMessages((prev) => [...prev, { id: userId, role: "user", text: message.text }]);
@@ -71,17 +49,7 @@ export default function AIDialogue({ questions }: AIDialogueProps) {
                     .map((q, i) => `Question ${q.id}: ${q.q_text}\nAnswer: ${q.a}`)
                     .join("\n\n")
                 : "No questions available.";
-        try {
-            const formattedQuestions = Array.isArray(questions)
-                ? questions
-                    .map((q, i) => `Question ${q.id}: ${q.q_text}\nAnswer: ${q.a}`)
-                    .join("\n\n")
-                : "No questions available.";
 
-            const historyText = messages
-                .slice(-maxHistory) // last N messages
-                .map((m) => `${m.role === "user" ? "Student" : "Tutor"}: ${m.text}`)
-                .join("\n");
             const historyText = messages
                 .slice(-maxHistory) // last N messages
                 .map((m) => `${m.role === "user" ? "Student" : "Tutor"}: ${m.text}`)
@@ -110,7 +78,6 @@ export default function AIDialogue({ questions }: AIDialogueProps) {
     });
 
             if (!res.ok) throw new Error("AI backend error");
-            if (!res.ok) throw new Error("AI backend error");
 
             const aiText = await res.text();
             const assistantId = crypto.randomUUID();
@@ -121,20 +88,7 @@ export default function AIDialogue({ questions }: AIDialogueProps) {
             setStatus("error");
         }
     };
-            const aiText = await res.text();
-            const assistantId = crypto.randomUUID();
-            setMessages((prev) => [...prev, { id: assistantId, role: "assistant", text: aiText }]);
-            setStatus("idle");
-        } catch (err) {
-            console.error(err);
-            setStatus("error");
-        }
-    };
 
-    const handleSubmit = (message: { text: string }) => {
-        sendMessage(message);
-        setText("");
-    };
     const handleSubmit = (message: { text: string }) => {
         sendMessage(message);
         setText("");
@@ -183,12 +137,4 @@ export default function AIDialogue({ questions }: AIDialogueProps) {
             </PromptInput>
         </div>
     );
-                <PromptInputFooter>
-                    <PromptInputTools></PromptInputTools>
-                    <PromptInputSubmit disabled={!text || status === "sending"} status={status} />
-                </PromptInputFooter>
-            </PromptInput>
-        </div>
-    );
 }
-

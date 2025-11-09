@@ -244,7 +244,7 @@ export default function QuestionClient({
                                                     >
                                                         Check Answer
                                                     </Button>
-                                                    <Button
+                                                    {/* <Button
                                                         variant="secondary"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
@@ -252,7 +252,7 @@ export default function QuestionClient({
                                                         }}
                                                     >
                                                         Explain
-                                                    </Button>
+                                                    </Button> */}
                                                 </ButtonGroup>
 
                                                 <div className="mt-4 text-xs text-muted-foreground text-center">

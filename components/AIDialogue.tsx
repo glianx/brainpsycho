@@ -29,7 +29,7 @@ export default function AIDialogue({ questions }: AIDialogueProps) {
     const [messages, setMessages] = useState<
         { id: string; role: "user" | "assistant"; text: string }[]
     >([]);
-    const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
+    const [status, setStatus] = useState<"streaming" | "error" | undefined>(undefined);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const maxHistory = 10;
@@ -40,7 +40,7 @@ export default function AIDialogue({ questions }: AIDialogueProps) {
         // Add user message to UI
         const userId = crypto.randomUUID();
         setMessages((prev) => [...prev, { id: userId, role: "user", text: message.text }]);
-        setStatus("sending");
+        setStatus("streaming");
 
         try {
             const formattedQuestions = Array.isArray(questions)
@@ -91,15 +91,16 @@ Here are the questions and answers: ${formattedQuestions}. Here is the conversat
             const aiText = await res.text();
             const assistantId = crypto.randomUUID();
             setMessages((prev) => [...prev, { id: assistantId, role: "assistant", text: aiText }]);
-            setStatus("idle");
+            setStatus(undefined);
         } catch (err) {
             console.error(err);
             setStatus("error");
         }
     };
 
-    const handleSubmit = (message: { text: string }) => {
-        sendMessage(message);
+    const handleSubmit = (message: { text?: string }) => {
+        if (!message.text) return;
+        sendMessage({ text: message.text });
         setText("");
     };
 
@@ -138,11 +139,11 @@ Here are the questions and answers: ${formattedQuestions}. Here is the conversat
                             </Message>
                         ))}
 
-                        {status === "sending" && (
-                            <div className="flex justify-center mt-6 mb-4">
-                                <Loader className="w-12 h-12" />
-                            </div>
-                        )}
+                    {status === "streaming" && (
+                        <div className="flex justify-center mt-6 mb-4">
+                            <Loader className="w-12 h-12" />
+                        </div>
+                    )}
                     </ConversationContent>
                     <ConversationScrollButton />
                 </Conversation>
@@ -160,7 +161,7 @@ Here are the questions and answers: ${formattedQuestions}. Here is the conversat
 
                 <PromptInputFooter>
                     <PromptInputTools></PromptInputTools>
-                    <PromptInputSubmit disabled={!text || status === "sending"} status={status} />
+                    <PromptInputSubmit disabled={!text || status === "streaming"} status={status} />
                 </PromptInputFooter>
             </PromptInput>
         </div>

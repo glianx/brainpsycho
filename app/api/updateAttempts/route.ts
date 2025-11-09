@@ -1,11 +1,16 @@
 import { neon } from "@neondatabase/serverless";
 import { NextRequest, NextResponse } from "next/server";
-import { stackServerApp } from "@/stack";
+// TEMPORARILY DISABLED - Waiting for Stack Auth keys
+// import { stackServerApp } from "@/stack";
 
 const sql = neon(process.env.DATABASE_URL!);
 
 export async function POST(request: NextRequest) {
     try {
+        // TEMPORARILY DISABLED - Using mock user for testing
+        const user = { id: "43ded5e3-7c58-4219-b4cb-380f5adab974" }; // phillip
+
+        /* Original auth code - uncomment when Stack Auth is ready
         // Get authenticated user from Stack Auth
         const user = await stackServerApp.getUser();
         
@@ -15,6 +20,7 @@ export async function POST(request: NextRequest) {
                 { status: 401 }
             );
         }
+        */
 
         const body = await request.json();
         const { questionId, userAnswer, timeTaken } = body;
@@ -40,9 +46,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error("Database error:", error);
-        return NextResponse.json(
-            { error: "Failed to save response" },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: "Failed to save response" }, { status: 500 });
     }
 }

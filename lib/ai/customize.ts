@@ -1,7 +1,38 @@
 import OpenAI from "openai";
 
-// match to dc with drizzle
-export type Interest = "Sports" | "Music" | "Art";
+// Match database enum - all 10 interests
+export type Interest =
+    | "Sports"
+    | "Art"
+    | "Music"
+    | "Science"
+    | "Cooking"
+    | "Gaming"
+    | "Nature"
+    | "Animals"
+    | "Space"
+    | "Technology";
+
+// Interest metadata for UI display
+export const INTERESTS_CONFIG: Record<
+    Interest,
+    {
+        label: string;
+        color: string;
+        emoji: string;
+    }
+> = {
+    Sports: { label: "Sports", color: "#FF6B35", emoji: "⚽" },
+    Art: { label: "Art", color: "#E63946", emoji: "🎨" },
+    Music: { label: "Music", color: "#A855F7", emoji: "🎵" },
+    Science: { label: "Science", color: "#3B82F6", emoji: "🔬" },
+    Cooking: { label: "Cooking", color: "#F59E0B", emoji: "🍳" },
+    Gaming: { label: "Gaming", color: "#10B981", emoji: "🎮" },
+    Nature: { label: "Nature", color: "#22C55E", emoji: "🌿" },
+    Animals: { label: "Animals", color: "#D97706", emoji: "🐾" },
+    Space: { label: "Space", color: "#6366F1", emoji: "🚀" },
+    Technology: { label: "Technology", color: "#06B6D4", emoji: "💻" },
+};
 
 export interface CustomizedQuestion {
     questionText: string;
@@ -24,6 +55,8 @@ export async function customizeQuestion(
     const res = await client.responses.create({
         model: "gpt-5-nano",
         input: `You are a creative educator who personalizes math problems based on student interests.
+
+SUPER MOST IMPORTANT: USe the MathJax delimiters exactly the same that is \\( \\) for inline and \\[ \\] for display math. just copy those. All math in MathJax syntax.
 
 Original Question: ${questionText}
 Original Answer: ${solutionText}

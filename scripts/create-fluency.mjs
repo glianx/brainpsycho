@@ -1,11 +1,11 @@
-import { neon } from "@neondatabase/serverless"
-import dotenv from "dotenv"
+import { neon } from "@neondatabase/serverless";
+import dotenv from "dotenv";
 
-dotenv.config({ path: '../.env'})
+dotenv.config({ path: "../.env" });
 
-const sql = neon(process.env.DATABASE_URL)
+const sql = neon(process.env.DATABASE_URL);
 
-console.log(await sql`select * from neon_auth.users_sync`)
+console.log(await sql`select * from neon_auth.users_sync`);
 
 await sql`create table fluency (
     id serial primary key,
@@ -15,4 +15,4 @@ await sql`create table fluency (
     time_taken integer not null,
     attempts_taken integer not null,
     attempted_at timestamptz default current_timestamp
-)`
+)`;

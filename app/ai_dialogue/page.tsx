@@ -39,8 +39,7 @@ export default function InputDemo() {
     const [messages, setMessages] = useState<
         { id: string; role: "user" | "assistant"; text: string }[]
     >([]);
-    const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
-
+    const [status, setStatus] = useState<"streaming" | "error" | undefined>(undefined);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const sendMessage = async (message: { text: string }) => {
@@ -49,7 +48,7 @@ export default function InputDemo() {
         // Add user message to UI
         const userId = crypto.randomUUID();
         setMessages((prev) => [...prev, { id: userId, role: "user", text: message.text }]);
-        setStatus("sending");
+        setStatus("streaming");
 
         try {
             // Send message to your backend
@@ -64,15 +63,16 @@ export default function InputDemo() {
             const aiText = await res.text();
             const assistantId = crypto.randomUUID();
             setMessages((prev) => [...prev, { id: assistantId, role: "assistant", text: aiText }]);
-            setStatus("idle");
+            setStatus(undefined);
         } catch (err) {
             console.error(err);
             setStatus("error");
         }
     };
 
-    const handleSubmit = (message: { text: string }) => {
-        sendMessage(message);
+    const handleSubmit = (message: { text?: string }) => {
+        if (!message.text) return;
+        sendMessage({ text: message.text });
         setText("");
     };
 
@@ -110,7 +110,7 @@ export default function InputDemo() {
                             <GlobeIcon size={16} /> Search
                         </PromptInputButton>
                     </PromptInputTools>
-                    <PromptInputSubmit disabled={!text || status === "sending"} status={status} />
+                    <PromptInputSubmit disabled={!text || status === "streaming"} status={status} />
                 </PromptInputFooter>
             </PromptInput>
         </div>

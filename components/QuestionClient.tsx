@@ -69,7 +69,7 @@ export default function QuestionClient({ initialQuestions }: { initialQuestions:
         });
     }
 
-    function handleCheckAnswer(q: any) {
+    async function handleCheckAnswer(q: any) {
         const attempt = attempts[q.id];
         if (!attempt?.currentAnswer) return;
     
@@ -86,15 +86,17 @@ export default function QuestionClient({ initialQuestions }: { initialQuestions:
                 timeStarted: attempt.timeStarted,
             } satisfies AttemptHistory, // Ensures type safety
         }));
+        
+        fetch("/api/updateAttempts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                questionId: q.id,
+                userAnswer: attempt.currentAnswer,
+                timeTaken: Math.floor((Date.now() - attempt.timeStarted) / 1000),
+            }),
+        }).catch(err => console.error('Failed to save response:', err));
 
-        // TODO: Save to database here
-        // saveAttempt({
-        //     questionId: q.id,
-        //     userAnswer: attempt.currentAnswer,
-        //     timeSpentSeconds: Math.floor((Date.now() - attempt.timeStarted) / 1000),
-        //     isCorrect,
-        //     attemptHistory: [...attempt.attempts, attempt.currentAnswer],
-        // });
     }
 
     function getButtonVariant(q: any, option: string) {

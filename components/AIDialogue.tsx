@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   PromptInput,
   PromptInputTextarea,
@@ -96,9 +96,32 @@ export default function AIDialogue({ questions }: AIDialogueProps) {
     setText('');
   };
 
+
+  // Auto-scroll to bottom when messages update
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lastMessageRef = useRef<HTMLDivElement>(null);
+
+ useEffect(() => {
+  const container = containerRef.current;
+  if (!container) return;
+
+  // Get the last message element inside the container
+  const messagesContainer = container.querySelector(".flex-col");
+  if (!messagesContainer) return;
+
+  const lastMessage = messagesContainer.lastElementChild as HTMLElement;
+  if (!lastMessage) return;
+
+  // Scroll so the top of the last message aligns with top of container
+  container.scrollTo({
+    top: lastMessage.offsetTop,
+    behavior: "smooth",
+  });
+}, [messages]);
+
   return (
-    <div className="max-w-4xl mx-auto p-6 relative rounded-lg border h-[600px] flex flex-col">
-      <div className="flex-1 overflow-y-auto overflow-hidden">
+    <div className="max-w-4xl mx-auto p-6 relative rounded-lg border h-[60vh] md:h-[40vh] lg:h-[75vh] flex flex-col">
+      <div className="flex-1 overflow-y-auto overflow-hidden" ref={containerRef}>
       <Conversation role="log">
         <ConversationContent className="flex flex-col gap-8 p-4">
           {messages.map((message) => (

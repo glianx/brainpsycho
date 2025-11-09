@@ -511,25 +511,25 @@ export const PromptInput = ({
     const remove = usingProvider
         ? (id: string) => controller.attachments.remove(id)
         : (id: string) =>
-              setItems((prev) => {
-                  const found = prev.find((file) => file.id === id);
-                  if (found?.url) {
-                      URL.revokeObjectURL(found.url);
-                  }
-                  return prev.filter((file) => file.id !== id);
-              });
+            setItems((prev) => {
+                const found = prev.find((file) => file.id === id);
+                if (found?.url) {
+                    URL.revokeObjectURL(found.url);
+                }
+                return prev.filter((file) => file.id !== id);
+            });
 
     const clear = usingProvider
         ? () => controller.attachments.clear()
         : () =>
-              setItems((prev) => {
-                  for (const file of prev) {
-                      if (file.url) {
-                          URL.revokeObjectURL(file.url);
-                      }
-                  }
-                  return [];
-              });
+            setItems((prev) => {
+                for (const file of prev) {
+                    if (file.url) {
+                        URL.revokeObjectURL(file.url);
+                    }
+                }
+                return [];
+            });
 
     const openFileDialog = usingProvider
         ? () => controller.attachments.openFileDialog()
@@ -646,9 +646,9 @@ export const PromptInput = ({
         const text = usingProvider
             ? controller.textInput.value
             : (() => {
-                  const formData = new FormData(form);
-                  return (formData.get("message") as string) || "";
-              })();
+                const formData = new FormData(form);
+                return (formData.get("message") as string) || "";
+            })();
 
         // Reset form immediately after capturing text to avoid race condition
         // where user input during async blob conversion would be lost
@@ -754,7 +754,7 @@ export const PromptInputTextarea = ({
             // Check if the submit button is disabled before submitting
             const form = e.currentTarget.form;
             const submitButton = form?.querySelector(
-                'button[type="submit"]'
+                "button[type=\"submit\"]"
             ) as HTMLButtonElement | null;
             if (submitButton?.disabled) {
                 return;
@@ -799,15 +799,15 @@ export const PromptInputTextarea = ({
 
     const controlledProps = controller
         ? {
-              value: controller.textInput.value,
-              onChange: (e: ChangeEvent<HTMLTextAreaElement>) => {
-                  controller.textInput.setInput(e.currentTarget.value);
-                  onChange?.(e);
-              },
-          }
+            value: controller.textInput.value,
+            onChange: (e: ChangeEvent<HTMLTextAreaElement>) => {
+                controller.textInput.setInput(e.currentTarget.value);
+                onChange?.(e);
+            },
+        }
         : {
-              onChange,
-          };
+            onChange,
+        };
 
     return (
         <InputGroupTextarea

@@ -120,3 +120,14 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* Directory Card Animations */
+@layer utilities {
+    .question-card-wrapper {
+        will-change: transform;
+    }
+
+    .card-flip-container {
+        perspective: 1000px;
+    }
+}

@@ -44,8 +44,8 @@ export default function AIDialogue({ questions }: AIDialogueProps) {
         try {
             const formattedQuestions = Array.isArray(questions)
                 ? questions
-                      .map((q, i) => `Question ${q.id}: ${q.q_text}\nAnswer: ${q.a}`)
-                      .join("\n\n")
+                    .map((q, i) => `Question ${q.id}: ${q.q_text}\nAnswer: ${q.a}`)
+                    .join("\n\n")
                 : "No questions available.";
 
             const historyText = messages

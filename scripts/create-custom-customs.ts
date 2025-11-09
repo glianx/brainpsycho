@@ -5,15 +5,29 @@ import { insertCustomQuestion } from "../lib/db/custom_questions";
 
 dotenv.config();
 
-const sql = neon(process.env.DATABASE_URL!);
-
 // All interests to generate customizations for
 const INTERESTS: Interest[] = ["Sports", "Music", "Art"];
+
+// Retry helper function
+async function retryWithBackoff<T>(fn: () => Promise<T>, maxRetries = 3, delay = 1000): Promise<T> {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            return await fn();
+        } catch (error) {
+            if (i === maxRetries - 1) throw error;
+            const waitTime = delay * Math.pow(2, i);
+            console.log(`  ⏳ Retry ${i + 1}/${maxRetries} in ${waitTime}ms...`);
+            await new Promise((resolve) => setTimeout(resolve, waitTime));
+        }
+    }
+    throw new Error("Max retries exceeded");
+}
 
 async function createCustomQuestions() {
     console.log("🎨 Starting to create custom questions...\n");
 
-    // Get all questions with solutions
+    // Get all questions with solutions - fresh connection
+    const sql = neon(process.env.DATABASE_URL!);
     const questions = await sql`
         SELECT id, q_text, solution 
         FROM questions 
@@ -29,11 +43,14 @@ async function createCustomQuestions() {
 
         for (const interest of INTERESTS) {
             try {
-                // Check if customization already exists
-                const existing = await sql`
-                    SELECT id FROM custom_questions 
-                    WHERE question_id = ${question.id} AND interest = ${interest}
-                `;
+                // Check if customization already exists - with retry
+                const existing = await retryWithBackoff(async () => {
+                    const checkSql = neon(process.env.DATABASE_URL!);
+                    return await checkSql`
+                        SELECT id FROM custom_questions 
+                        WHERE question_id = ${question.id} AND interest = ${interest}
+                    `;
+                });
 
                 if (existing.length > 0) {
                     console.log(`  ⏭️  ${interest}: Already exists, skipping`);
@@ -54,11 +71,13 @@ async function createCustomQuestions() {
                     continue;
                 }
 
-                // Insert into database
-                await insertCustomQuestion({
-                    question_id: question.id,
-                    interest: interest,
-                    custom_question_text: customized.questionText,
+                // Insert into database with retry
+                await retryWithBackoff(async () => {
+                    await insertCustomQuestion({
+                        question_id: question.id,
+                        interest: interest,
+                        custom_question_text: customized.questionText,
+                    });
                 });
 
                 console.log(`  ✅ ${interest}: Created!`);

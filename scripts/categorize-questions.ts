@@ -5,12 +5,26 @@ import { updateQuestion } from "../lib/db/questions";
 
 dotenv.config();
 
-const sql = neon(process.env.DATABASE_URL!);
+// Retry helper function
+async function retryWithBackoff<T>(fn: () => Promise<T>, maxRetries = 3, delay = 1000): Promise<T> {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            return await fn();
+        } catch (error) {
+            if (i === maxRetries - 1) throw error;
+            const waitTime = delay * Math.pow(2, i);
+            console.log(`  ⏳ Retry ${i + 1}/${maxRetries} in ${waitTime}ms...`);
+            await new Promise((resolve) => setTimeout(resolve, waitTime));
+        }
+    }
+    throw new Error("Max retries exceeded");
+}
 
 async function categorizeAllQuestions() {
     console.log("🏷️  Starting to categorize all questions...\n");
 
-    // Get all questions
+    // Get all questions - fresh connection
+    const sql = neon(process.env.DATABASE_URL!);
     const questions = await sql`SELECT id, q_text, category FROM questions`;
     console.log(`Found ${questions.length} questions to categorize\n`);
 
@@ -34,8 +48,10 @@ async function categorizeAllQuestions() {
             const category = await categorizeQuestion(question.q_text);
             console.log(`✅ Category: ${category}`);
 
-            // Update in database
-            await updateQuestion(question.id, { category });
+            // Update in database with retry
+            await retryWithBackoff(async () => {
+                await updateQuestion(question.id, { category });
+            });
 
             categorized++;
         } catch (error) {

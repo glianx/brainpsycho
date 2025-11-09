@@ -14,9 +14,14 @@ export default async function Home() {
                 <QuestionClient initialQuestions={initial} />
             </div>
 
-            <div className="w-[400px]">
-                <AIDialogue questions={initial} />
+        <div className="sticky top-6 self-start w-[30vw] min-w-[300px] max-w-[500px] overflow-y-auto p-6">
+            <div className="mb-4 p-3 bg-gray-900 text-white rounded-lg shadow-md text-center font-semibold text-lg border border-gray-700">
+                Math Tutor
             </div>
+            <div  className="overflow-y-auto">
+                <AIDialogue questions={initial}/>
+            </div>
+        </div>
         </div>
     );
 }

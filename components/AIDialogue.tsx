@@ -21,7 +21,17 @@ import { Message, MessageContent } from "@/components/ai-elements/message";
 import { MathContent } from "@/components/MathContent";
 
 interface AIDialogueProps {
-    questions: { id: number; q_text: string; a: string }[];
+    questions: { 
+        id: number; 
+        q_num: number;
+        q_text: string;
+        answer: 'a' | 'b' | 'c' | 'd' | 'e';
+        a: string;
+        b: string;
+        c: string;
+        d: string;
+        e: string;
+    }[];
 }
 
 export default function AIDialogue({ questions }: AIDialogueProps) {
@@ -45,9 +55,11 @@ export default function AIDialogue({ questions }: AIDialogueProps) {
         try {
             const formattedQuestions = Array.isArray(questions)
                 ? questions
-                      .map((q, i) => `Question ${q.id}: ${q.q_text}\nAnswer: ${q.a}`)
+                      .map((q, i) => `Question ${q.q_num}: ${q.q_text}\nAnswer: ${q[q.answer]}`)
                       .join("\n\n")
                 : "No questions available.";
+
+            console.log(formattedQuestions)
 
             const historyText = messages
                 .slice(-maxHistory) // last N messages
@@ -75,6 +87,7 @@ Example response format:
 "The surface area of a cube has area equal to its total surface area: \\(6s^2\\). Given \\(6s^2 = 18\\), we get \\(s^2 = 3\\) so \\(s = \\sqrt{3}\\) cm. The volume is \\(s^3 = (\\sqrt{3})^3 = 3\\sqrt{3}\\) cm³."
 
 Here are the questions and answers: ${formattedQuestions}. Here is the conversation history so far: ${historyText}. When responding, give a detailed, step-by-step explanation suitable for a student.`;
+
 
             // Send info to backend
             const res = await fetch("/api/askChatProxy", {
